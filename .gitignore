@@ -1,2 +1,4 @@
 bioenv/
 *.xlsx
+sra_files/
+fastq_files/
