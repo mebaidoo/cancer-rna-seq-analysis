@@ -78,7 +78,6 @@ def download_sra(sra_id, output_dir="sra_files"):
 def sra_to_fastq(sra_id, input_dir="sra_files", output_dir="fastq_files"):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    # sra_path = os.path.join(input_dir, f"{sra_id}.sra")
     sra_path = os.path.join(input_dir, sra_id, f"{sra_id}.sra")
 
     
@@ -103,7 +102,7 @@ def process_sra_from_gsm(gsm_to_sra, sra_output_dir="sra_files", fastq_output_di
             sra_to_fastq(sra_id, input_dir=sra_output_dir, output_dir=fastq_output_dir)
 
 # Get GSM IDs for GSE accession ID
-gse_accession = "GSE264108"
+gse_accession = "GSE11209"
 gsm_ids = get_gsm_ids_from_gse(gse_accession)
 # print returned GSM IDs
 print("GSM IDs:", gsm_ids)

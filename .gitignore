@@ -2,3 +2,4 @@ bioenv/
 *.xlsx
 sra_files/
 fastq_files/
+genome_indices/

@@ -1,0 +1,73 @@
+import os
+import subprocess
+
+# Set directories
+fastq_dir = "fastq_files"  # Path to FASTQ files
+qc_dir = "qc_reports"  # Output directory for FastQC and MultiQC reports
+trimmed_dir = "trimmed_reads"  # Directory for trimmed reads
+aligned_dir = "aligned"  # Directory for aligned BAM files
+genome_dir = "/path/to/genome_index"  # Replace with your genome index path
+
+# # OR if need to set using WSL format
+# fastq_dir = "/home/baido/project/fastq_files"  # Path to FASTQ files (update for WSL)
+# qc_dir = "/home/baido/project/qc_reports"  # Output directory for FastQC and MultiQC reports
+# trimmed_dir = "/home/baido/project/trimmed_reads"  # Directory for trimmed reads
+# aligned_dir = "/home/baido/project/aligned"  # Directory for aligned BAM files
+# genome_dir = "/home/baido/genome_index"  # Replace with your genome index path
+
+# Ensure output directories exist
+for directory in [fastq_dir, qc_dir, trimmed_dir, aligned_dir]:
+    os.makedirs(directory, exist_ok=True)
+
+# Function to run shell commands
+def run_command(command):
+    try:
+        print(f"Running: {command}")
+        subprocess.run(command, shell=True, check=True)
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+
+# 1. Quality Control with FastQC
+def run_fastqc():
+    run_command(f"fastqc {fastq_dir}/*.fastq -o {qc_dir}")
+
+# 2. Summarize Quality Reports with MultiQC
+def run_multiqc():
+    run_command(f"multiqc {qc_dir} -o {qc_dir}")
+
+# 3. Trim Reads (if necessary) using Trim Galore
+def trim_reads():
+    run_command(f"trim_galore --quality 20 --phred33 --output_dir {trimmed_dir} {fastq_dir}/*.fastq")
+
+# 4. Align Reads using STAR (Modify for HISAT2 if needed)
+def align_reads():
+    for fastq_file in os.listdir(trimmed_dir):
+        if fastq_file.endswith("_1.fastq"):
+            sample_id = fastq_file.split("_1.fastq")[0]
+            read1 = os.path.join(trimmed_dir, f"{sample_id}_1.fastq")
+            read2 = os.path.join(trimmed_dir, f"{sample_id}_2.fastq")
+            output_prefix = os.path.join(aligned_dir, sample_id)
+
+            run_command(f"STAR --runThreadN 4 --genomeDir {genome_dir} --readFilesIn {read1} {read2} "
+                        f"--outFileNamePrefix {output_prefix}_ --outSAMtype BAM SortedByCoordinate")
+
+# Main function to execute the pipeline
+def main():
+    print("Starting RNA-seq analysis...")
+
+    # Step 1: Run FastQC on FASTQ files
+    run_fastqc()
+
+    # Step 2: Summarize QC reports with MultiQC
+    run_multiqc()
+
+    # Step 3: Trim reads if needed
+    trim_reads()
+
+    # Step 4: Align reads using STAR
+    align_reads()
+
+    print("RNA-seq analysis complete.")
+
+if __name__ == "__main__":
+    main()
