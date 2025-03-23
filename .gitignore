@@ -3,3 +3,6 @@ bioenv/
 sra_files/
 fastq_files/
 genome_indices/
+aligned/
+qc_reports/
+trimmed_reads/

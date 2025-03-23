@@ -6,14 +6,7 @@ fastq_dir = "fastq_files"  # Path to FASTQ files
 qc_dir = "qc_reports"  # Output directory for FastQC and MultiQC reports
 trimmed_dir = "trimmed_reads"  # Directory for trimmed reads
 aligned_dir = "aligned"  # Directory for aligned BAM files
-genome_dir = "/path/to/genome_index"  # Replace with your genome index path
-
-# # OR if need to set using WSL format
-# fastq_dir = "/home/baido/project/fastq_files"  # Path to FASTQ files (update for WSL)
-# qc_dir = "/home/baido/project/qc_reports"  # Output directory for FastQC and MultiQC reports
-# trimmed_dir = "/home/baido/project/trimmed_reads"  # Directory for trimmed reads
-# aligned_dir = "/home/baido/project/aligned"  # Directory for aligned BAM files
-# genome_dir = "/home/baido/genome_index"  # Replace with your genome index path
+genome_dir = "genome_indices/STAR_R64-1-1" # Genome index path
 
 # Ensure output directories exist
 for directory in [fastq_dir, qc_dir, trimmed_dir, aligned_dir]:
@@ -38,18 +31,22 @@ def run_multiqc():
 # 3. Trim Reads (if necessary) using Trim Galore
 def trim_reads():
     run_command(f"trim_galore --quality 20 --phred33 --output_dir {trimmed_dir} {fastq_dir}/*.fastq")
-
-# 4. Align Reads using STAR (Modify for HISAT2 if needed)
+            
+# 4. Align Reads using STAR (for single-end data)
 def align_reads():
     for fastq_file in os.listdir(trimmed_dir):
-        if fastq_file.endswith("_1.fastq"):
-            sample_id = fastq_file.split("_1.fastq")[0]
-            read1 = os.path.join(trimmed_dir, f"{sample_id}_1.fastq")
-            read2 = os.path.join(trimmed_dir, f"{sample_id}_2.fastq")
+        if fastq_file.endswith("_1_trimmed.fq"):
+            sample_id = fastq_file.split("_1_trimmed.fq")[0]
+            read1 = os.path.join(trimmed_dir, fastq_file)
             output_prefix = os.path.join(aligned_dir, sample_id)
 
-            run_command(f"STAR --runThreadN 4 --genomeDir {genome_dir} --readFilesIn {read1} {read2} "
+            run_command(f"STAR --runThreadN 4 --genomeDir {genome_dir} --readFilesIn {read1} "
                         f"--outFileNamePrefix {output_prefix}_ --outSAMtype BAM SortedByCoordinate")
+            # If two reads (paired-end), add:
+            # read2 = os.path.join(trimmed_dir, f"{sample_id}_2.fastq")
+            # run_command(f"STAR --runThreadN 4 --genomeDir {genome_dir} --readFilesIn {read1} {read2} "
+            #             f"--outFileNamePrefix {output_prefix}_ --outSAMtype BAM SortedByCoordinate")
+
 
 # Main function to execute the pipeline
 def main():
