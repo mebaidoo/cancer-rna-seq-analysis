@@ -47,6 +47,13 @@ python qc_align.py
 ## Notes
 - You can skip the genome index building step if using a pre-built genome index.
 - You can skip the trimming step if the data quality is good from the QC reports.
+### Quality Control Example
+**Per Base Sequence Quality for SRR002058_1 sample:**
+
+![Quality Plot](images/quality_plot_58.png)
+**Per Base Sequence Quality for SRR002058_1 sample:**
+
+![Quality Plot](images/quality_plot_58.png)
 ## Next Steps
 - Perform differential expression analysis using DESeq2.
 - Visualize the results using Python.
