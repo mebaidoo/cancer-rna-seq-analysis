@@ -6,3 +6,4 @@ genome_indices/
 aligned/
 qc_reports/
 trimmed_reads/
+trimmed_qc_reports/
