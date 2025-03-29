@@ -36,7 +36,7 @@ You can install the required tools using **conda** or **pip**.
 ## Running the Analysis
 1. Run the download_rna_seq_fastq.py script to download the RNA-seq data from SRA and
 2. Run the build_genome_index.py script to download genome annotation files from Ensembl Fungi and build the genome index.
-3.	Run the qc_align.py script to run FastQC, MultiQC, trim the reads and align the reads with the built genome index.
+3.	Run the qc_align.py script to run FastQC, MultiQC, trim the reads, check the quality of trimmed reads, and align the reads with the built genome index.
 
 Example of running the complete pipeline:
 ```
